@@ -1,6 +1,6 @@
-import swagger from '@fastify/swagger';
-import swaggerUI from '@fastify/swagger-ui';
-import { FastifyInstance } from 'fastify';
+import swagger from '@fastify/swagger'
+import swaggerUI from '@fastify/swagger-ui'
+import { FastifyInstance } from 'fastify'
 
 export async function registerSwagger(fastify: FastifyInstance) {
   await fastify.register(swagger, {
@@ -8,16 +8,16 @@ export async function registerSwagger(fastify: FastifyInstance) {
       info: {
         title: 'Fastify API',
         description: 'API documentation',
-        version: '1.0.0',
-      },
-    },
-  });
+        version: '1.0.0'
+      }
+    }
+  })
 
   await fastify.register(swaggerUI, {
     routePrefix: '/docs',
     uiConfig: {
       docExpansion: 'full',
-      deepLinking: false,
-    },
-  });
+      deepLinking: false
+    }
+  })
 }

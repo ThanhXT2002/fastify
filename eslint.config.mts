@@ -6,9 +6,9 @@ import { defineConfig } from 'eslint/config'
 
 export default defineConfig([
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    files: ['**/*.{ts,js,mjs,cjs,mts,cts}'],
     plugins: { js },
-    extends: ['js/recommended'],
+    extends: ['ts/recommended'],
     languageOptions: { globals: globals.node }
   },
   tseslint.configs.recommended,

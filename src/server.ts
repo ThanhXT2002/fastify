@@ -1,7 +1,9 @@
 import Fastify from 'fastify'
+import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { registerSwagger } from './config/swagger.js'
+import 'dotenv/config'
 
-const fastify = Fastify()
+const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
 
 await registerSwagger(fastify)
 

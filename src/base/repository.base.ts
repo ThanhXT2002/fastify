@@ -1,12 +1,26 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../../generated/prisma'
 
 const prisma = new PrismaClient()
 
-export class BaseRepository<TModel extends keyof typeof prisma> {
-  protected model: (typeof prisma)[TModel]
+type ModelDelegate = {
+  findMany: (args?: any) => Promise<any>;
+  findUnique: (args: any) => Promise<any>;
+  create: (args: any) => Promise<any>;
+  update: (args: any) => Promise<any>;
+  delete: (args: any) => Promise<any>;
+  upsert: (args: any) => Promise<any>;
+  count: (args?: any) => Promise<any>;
+};
+
+type PrismaModelKeys = {
+  [K in keyof typeof prisma]: (typeof prisma)[K] extends ModelDelegate ? K : never
+}[keyof typeof prisma];
+
+export class BaseRepository<TModel extends PrismaModelKeys> {
+  protected model: ModelDelegate;
 
   constructor(model: TModel) {
-    this.model = prisma[model]
+    this.model = prisma[model] as ModelDelegate;
   }
 
   async findMany(query: object = {}) {
