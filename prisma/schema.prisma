@@ -27,6 +27,8 @@ model User {
   name      String?
   avatarUrl String?
   role      Role     // dùng enum Role
+  key       String   @unique // API key dùng để xác thực liên kết folder
+  createdAt DateTime @default(now())
 
   @@map("users")
 }
