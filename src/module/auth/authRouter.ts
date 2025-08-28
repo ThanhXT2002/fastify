@@ -1,6 +1,5 @@
 import { AuthController } from './authController.js'
 import { FastifyInstance } from 'fastify'
-import { registerSchema } from '~/schema/authSchema'
 
 export default async function authRouter(fastify: FastifyInstance) {
   fastify.post(
@@ -19,9 +18,11 @@ export default async function authRouter(fastify: FastifyInstance) {
           200: {
             type: 'object',
             properties: {
-              success: { type: 'boolean' },
+              status: { type: 'boolean' },
+              code: { type: 'integer' },
               data: { type: 'object' },
-              message: { type: 'string' }
+              message: { type: 'string' },
+              timestamp: { type: 'string', format: 'date-time' }
             }
           }
         },

@@ -27,15 +27,22 @@ export class AuthService {
     await cloudinary.api.create_folder(email)
 
     // Lưu vào database
-    await this.authRepo.create({
-      id: user.id,
-      email,
-      name,
-      key: apiKey,
-      avatarUrl: user.user_metadata?.avatar_url || null,
-      role: 'USER',
-      createdAt: new Date()
-    })
+    try {
+      await this.authRepo.create({
+        id: user.id,
+        email,
+        name,
+        key: apiKey,
+        avatarUrl: user.user_metadata?.avatar_url || null,
+        role: 'USER',
+        createdAt: new Date()
+      })
+    } catch (err: any) {
+      if (err.code === 'P2002') {
+        return { error: { code: 'P2002', message: 'Record already exists', meta: err.meta } }
+      }
+      return { error: err }
+    }
 
     return { user, apiKey }
   }

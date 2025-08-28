@@ -16,13 +16,19 @@ export class AuthController {
     if (!parseResult.success) {
       return reply
         .code(StatusCodes.BAD_REQUEST)
-        .send(ApiResponse.error(parseResult.error.issues, 'Dữ liệu không hợp lệ'))
+        .send(ApiResponse.error(parseResult.error.issues, 'Invalid request data'))
     }
     const { email, password, name } = parseResult.data
     const result = await this.authService.register(email, password, name)
     if (result.error) {
-      return reply.code(StatusCodes.BAD_REQUEST).send(ApiResponse.error(result.error, 'Đăng ký thất bại'))
+      // Unique constraint -> conflict
+      if (result.error.code === 'P2002') {
+        return reply
+          .code(StatusCodes.CONFLICT)
+          .send(ApiResponse.error('User already exists', 'User already exists, registration failed', StatusCodes.CONFLICT))
+      }
+      return reply.code(StatusCodes.BAD_REQUEST).send(ApiResponse.error(result.error, 'Registration failed'))
     }
-    return reply.code(StatusCodes.OK).send(ApiResponse.ok(result, 'Đăng ký thành công', StatusCodes.OK))
+    return reply.code(StatusCodes.OK).send(ApiResponse.ok(result, 'Registration successful', StatusCodes.OK))
   }
 }

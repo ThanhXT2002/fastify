@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../generated/prisma'
+import { PrismaClient, Prisma } from '../../generated/prisma'
 
 const prisma = new PrismaClient()
 
@@ -32,7 +32,18 @@ export class BaseRepository<TModel extends PrismaModelKeys> {
   }
 
   async create(data: object) {
-    return this.model.create({ data })
+    try {
+      return await this.model.create({ data })
+    } catch (err: any) {
+      // Prisma unique constraint
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        const e = new Error('Unique constraint violation')
+        ;(e as any).code = 'P2002'
+        ;(e as any).meta = err.meta
+        throw e
+      }
+      throw err
+    }
   }
 
   async update(where: object, data: object) {
