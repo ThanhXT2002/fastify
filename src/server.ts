@@ -7,9 +7,10 @@ const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
 
 await registerSwagger(fastify)
 
-import { registerRoutes } from './router/index.js'
+import { indexRoutes } from './router/index.js'
 
-await registerRoutes(fastify)
+// register all application routes (router/index.ts handles prefixing)
+await indexRoutes(fastify)
 
 fastify.listen({ port: 3000 }, (err, address) => {
   if (err) throw err
