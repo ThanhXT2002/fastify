@@ -14,7 +14,7 @@ declare module 'fastify' {
 export async function verifyToken(request: FastifyRequest, reply: FastifyReply) {
   try {
     const authHeader = request.headers.authorization
-    
+
     if (!authHeader?.startsWith('Bearer ')) {
       return reply.code(401).send({
         status: false,
@@ -26,10 +26,13 @@ export async function verifyToken(request: FastifyRequest, reply: FastifyReply) 
     }
 
     const token = authHeader.replace('Bearer ', '')
-    
+
     // Verify token với Supabase
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    
+    const {
+      data: { user },
+      error
+    } = await supabase.auth.getUser(token)
+
     if (error || !user) {
       return reply.code(401).send({
         status: false,
@@ -46,13 +49,12 @@ export async function verifyToken(request: FastifyRequest, reply: FastifyReply) 
       email: user.email || '',
       ...user.user_metadata
     }
-
   } catch (error) {
     return reply.code(401).send({
       status: false,
       code: 401,
       errors: 'Token verification failed',
-      message: 'Unauthorized', 
+      message: 'Unauthorized',
       timestamp: new Date().toISOString()
     })
   }

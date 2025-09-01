@@ -5,7 +5,7 @@ import { requireRole } from '~/middleware/permissions.js'
 
 export default async function userRouter(fastify: FastifyInstance) {
   const userController = new UserController()
-  
+
   // All user routes require authentication
   fastify.addHook('preHandler', authenticateJWT)
 
@@ -29,7 +29,7 @@ export default async function userRouter(fastify: FastifyInstance) {
           properties: {
             status: { type: 'boolean' },
             code: { type: 'integer' },
-            data: { 
+            data: {
               type: 'object',
               properties: {
                 users: { type: 'array' },
@@ -75,7 +75,7 @@ export default async function userRouter(fastify: FastifyInstance) {
     handler: userController.getUserStatistics
   })
 
-  // Search users - Must be before /users/:id 
+  // Search users - Must be before /users/:id
   fastify.get('/users/search', {
     schema: {
       tags: ['User'],
@@ -101,7 +101,7 @@ export default async function userRouter(fastify: FastifyInstance) {
           properties: {
             status: { type: 'boolean' },
             code: { type: 'integer' },
-            data: { 
+            data: {
               type: 'object',
               properties: {
                 users: { type: 'array' },
@@ -145,7 +145,7 @@ export default async function userRouter(fastify: FastifyInstance) {
           properties: {
             status: { type: 'boolean' },
             code: { type: 'integer' },
-            data: { 
+            data: {
               type: 'object',
               properties: {
                 users: { type: 'array' },
@@ -188,7 +188,7 @@ export default async function userRouter(fastify: FastifyInstance) {
           properties: {
             status: { type: 'boolean' },
             code: { type: 'integer' },
-            data: { 
+            data: {
               type: 'object',
               properties: {
                 id: { type: 'string' },

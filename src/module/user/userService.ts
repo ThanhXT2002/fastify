@@ -1,4 +1,4 @@
-import { UserRepository } from "./userRepository.js";
+import { UserRepository } from './userRepository.js'
 
 type Role = 'ADMIN' | 'EDITOR' | 'USER'
 
@@ -33,7 +33,7 @@ export class UserService {
   async getUserById(id: string) {
     try {
       const user = await this.userRepository.getUserWithDetails(id)
-      
+
       if (!user) {
         throw new Error('User not found')
       }
@@ -45,22 +45,25 @@ export class UserService {
   }
 
   // Update user information
-  async updateUser(id: string, updateData: {
-    name?: string
-    role?: string
-    active?: boolean
-  }) {
+  async updateUser(
+    id: string,
+    updateData: {
+      name?: string
+      role?: string
+      active?: boolean
+    }
+  ) {
     try {
       // Check if user exists
       const existingUser = await this.userRepository.getUserWithDetails(id)
-      
+
       if (!existingUser) {
         throw new Error('User not found')
       }
 
       // Update user
       const updatedUser = await this.userRepository.updateUser(id, updateData)
-      
+
       return updatedUser
     } catch (error) {
       throw new Error(`Failed to update user: ${error}`)
@@ -72,7 +75,7 @@ export class UserService {
     try {
       // Check if user exists
       const existingUser = await this.userRepository.getUserWithDetails(id)
-      
+
       if (!existingUser) {
         throw new Error('User not found')
       }
@@ -83,7 +86,7 @@ export class UserService {
 
       // Soft delete user
       await this.userRepository.softDeleteUser(id)
-      
+
       return { message: 'User deactivated successfully' }
     } catch (error) {
       throw new Error(`Failed to deactivate user: ${error}`)
@@ -95,7 +98,7 @@ export class UserService {
     try {
       // Check if user exists
       const existingUser = await this.userRepository.getUserWithDetails(id)
-      
+
       if (!existingUser) {
         throw new Error('User not found')
       }
@@ -106,7 +109,7 @@ export class UserService {
 
       // Activate user
       const activatedUser = await this.userRepository.updateUser(id, { active: true })
-      
+
       return activatedUser
     } catch (error) {
       throw new Error(`Failed to activate user: ${error}`)
@@ -118,14 +121,14 @@ export class UserService {
     try {
       // Check if user exists
       const existingUser = await this.userRepository.getUserWithDetails(id)
-      
+
       if (!existingUser) {
         throw new Error('User not found')
       }
 
       // Hard delete user
       await this.userRepository.hardDeleteUser(id)
-      
+
       return { message: 'User deleted permanently' }
     } catch (error) {
       throw new Error(`Failed to delete user: ${error}`)
@@ -140,7 +143,7 @@ export class UserService {
       }
 
       const users = await this.userRepository.searchUsers(query.trim())
-      
+
       return {
         users,
         count: users.length,
@@ -156,7 +159,7 @@ export class UserService {
     try {
       const users = await this.userRepository.getUsersByRole(role)
       const count = await this.userRepository.countUsersByRole(role)
-      
+
       return {
         users,
         count,
@@ -176,7 +179,7 @@ export class UserService {
       const adminUsers = await this.userRepository.countUsersByRole('ADMIN')
       const userUsers = await this.userRepository.countUsersByRole('USER')
       const editorUsers = await this.userRepository.countUsersByRole('EDITOR')
-      
+
       return {
         total: totalUsers,
         active: activeUsers,

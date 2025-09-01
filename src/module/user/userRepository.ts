@@ -1,4 +1,4 @@
-import { BaseRepository } from "~/base/repository.base.js";
+import { BaseRepository } from '~/base/repository.base.js'
 
 export class UserRepository extends BaseRepository<'user'> {
   constructor() {
@@ -40,11 +40,14 @@ export class UserRepository extends BaseRepository<'user'> {
   }
 
   // Update user information
-  async updateUser(id: string, data: { 
-    name?: string
-    role?: string
-    active?: boolean 
-  }) {
+  async updateUser(
+    id: string,
+    data: {
+      name?: string
+      role?: string
+      active?: boolean
+    }
+  ) {
     return this.update({ id }, data)
   }
 
@@ -92,10 +95,7 @@ export class UserRepository extends BaseRepository<'user'> {
   async searchUsers(query: string) {
     return this.findMany({
       where: {
-        OR: [
-          { email: { contains: query, mode: 'insensitive' } },
-          { name: { contains: query, mode: 'insensitive' } }
-        ]
+        OR: [{ email: { contains: query, mode: 'insensitive' } }, { name: { contains: query, mode: 'insensitive' } }]
       },
       select: {
         id: true,

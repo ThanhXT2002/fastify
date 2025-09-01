@@ -54,7 +54,7 @@ export default async function authRouter(fastify: FastifyInstance) {
             properties: {
               status: { type: 'boolean' },
               code: { type: 'integer' },
-              data: { 
+              data: {
                 type: 'object',
                 properties: {
                   id: { type: 'string' },
@@ -101,7 +101,7 @@ export default async function authRouter(fastify: FastifyInstance) {
             properties: {
               status: { type: 'boolean' },
               code: { type: 'integer' },
-              data: { 
+              data: {
                 type: 'object',
                 properties: {
                   id: { type: 'string' },

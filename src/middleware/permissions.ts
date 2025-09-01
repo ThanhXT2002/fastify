@@ -53,7 +53,7 @@ export function requireRole(allowedRoles: string[]) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     // First get user role
     await getUserRole(request, reply)
-    
+
     if (!request.userRole || !allowedRoles.includes(request.userRole)) {
       return reply.code(403).send({
         status: false,
@@ -69,7 +69,7 @@ export function requireRole(allowedRoles: string[]) {
 // Check if user is admin
 export async function requireAdmin(request: FastifyRequest, reply: FastifyReply) {
   await getUserRole(request, reply)
-  
+
   if (request.userRole !== 'ADMIN') {
     return reply.code(403).send({
       status: false,
@@ -84,7 +84,7 @@ export async function requireAdmin(request: FastifyRequest, reply: FastifyReply)
 // Check if user is admin or editor
 export async function requireEditor(request: FastifyRequest, reply: FastifyReply) {
   await getUserRole(request, reply)
-  
+
   if (!['ADMIN', 'EDITOR'].includes(request.userRole || '')) {
     return reply.code(403).send({
       status: false,

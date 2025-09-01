@@ -3,24 +3,24 @@ import { PrismaClient, Prisma } from '../../generated/prisma'
 const prisma = new PrismaClient()
 
 type ModelDelegate = {
-  findMany: (args?: any) => Promise<any>;
-  findUnique: (args: any) => Promise<any>;
-  create: (args: any) => Promise<any>;
-  update: (args: any) => Promise<any>;
-  delete: (args: any) => Promise<any>;
-  upsert: (args: any) => Promise<any>;
-  count: (args?: any) => Promise<any>;
-};
+  findMany: (args?: any) => Promise<any>
+  findUnique: (args: any) => Promise<any>
+  create: (args: any) => Promise<any>
+  update: (args: any) => Promise<any>
+  delete: (args: any) => Promise<any>
+  upsert: (args: any) => Promise<any>
+  count: (args?: any) => Promise<any>
+}
 
 type PrismaModelKeys = {
   [K in keyof typeof prisma]: (typeof prisma)[K] extends ModelDelegate ? K : never
-}[keyof typeof prisma];
+}[keyof typeof prisma]
 
 export class BaseRepository<TModel extends PrismaModelKeys> {
-  protected model: ModelDelegate;
+  protected model: ModelDelegate
 
   constructor(model: TModel) {
-    this.model = prisma[model] as ModelDelegate;
+    this.model = prisma[model] as ModelDelegate
   }
 
   async findMany(query: object = {}) {
