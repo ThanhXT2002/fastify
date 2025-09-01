@@ -1,5 +1,8 @@
 import { AuthController } from './authController.js'
 import { FastifyInstance } from 'fastify'
+import { verifyToken } from '~/middleware/auth'
+
+const authController = new AuthController()
 
 export default async function authRouter(fastify: FastifyInstance) {
   fastify.post(
@@ -30,6 +33,94 @@ export default async function authRouter(fastify: FastifyInstance) {
         summary: 'Register new user'
       }
     },
-    new AuthController().register.bind(new AuthController())
+    authController.register.bind(authController)
+  )
+
+  fastify.get(
+    '/profile',
+    {
+      preHandler: [verifyToken],
+      schema: {
+        headers: {
+          type: 'object',
+          properties: {
+            authorization: { type: 'string' }
+          },
+          required: ['authorization']
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              status: { type: 'boolean' },
+              code: { type: 'integer' },
+              data: { 
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  email: { type: 'string' },
+                  name: { type: 'string' },
+                  role: { type: 'string' },
+                  avatarUrl: { type: 'string' },
+                  createdAt: { type: 'string' }
+                }
+              },
+              message: { type: 'string' },
+              timestamp: { type: 'string', format: 'date-time' }
+            }
+          }
+        },
+        tags: ['Auth'],
+        summary: 'Get user profile'
+      }
+    },
+    authController.getProfile.bind(authController)
+  )
+
+  fastify.put(
+    '/profile',
+    {
+      preHandler: [verifyToken],
+      schema: {
+        headers: {
+          type: 'object',
+          properties: {
+            authorization: { type: 'string' }
+          },
+          required: ['authorization']
+        },
+        body: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' }
+          }
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              status: { type: 'boolean' },
+              code: { type: 'integer' },
+              data: { 
+                type: 'object',
+                properties: {
+                  id: { type: 'string' },
+                  email: { type: 'string' },
+                  name: { type: 'string' },
+                  role: { type: 'string' },
+                  avatarUrl: { type: 'string' },
+                  createdAt: { type: 'string' }
+                }
+              },
+              message: { type: 'string' },
+              timestamp: { type: 'string', format: 'date-time' }
+            }
+          }
+        },
+        tags: ['Auth'],
+        summary: 'Update user profile'
+      }
+    },
+    authController.updateProfile.bind(authController)
   )
 }

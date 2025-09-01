@@ -31,6 +31,10 @@ export class BaseRepository<TModel extends PrismaModelKeys> {
     return this.model.findUnique(query)
   }
 
+  async findById(id: string) {
+    return this.model.findUnique({ where: { id } })
+  }
+
   async create(data: object) {
     try {
       return await this.model.create({ data })

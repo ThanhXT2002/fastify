@@ -46,4 +46,32 @@ export class AuthService {
 
     return { user, apiKey }
   }
+
+  async getUserProfile(userId: string) {
+    try {
+      const user = await this.authRepo.findById(userId)
+      if (!user) {
+        return { error: 'User not found' }
+      }
+      // Không trả về sensitive data như key
+      const { key, ...userProfile } = user
+      return { data: userProfile }
+    } catch (err: any) {
+      return { error: err.message || 'Failed to get user profile' }
+    }
+  }
+
+  async updateUserProfile(userId: string, updateData: { name?: string }) {
+    try {
+      const user = await this.authRepo.update({ id: userId }, updateData)
+      if (!user) {
+        return { error: 'User not found' }
+      }
+      // Không trả về sensitive data như key
+      const { key, ...userProfile } = user
+      return { data: userProfile }
+    } catch (err: any) {
+      return { error: err.message || 'Failed to update user profile' }
+    }
+  }
 }
