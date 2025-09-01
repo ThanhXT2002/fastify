@@ -57,3 +57,6 @@ export async function verifyToken(request: FastifyRequest, reply: FastifyReply) 
     })
   }
 }
+
+// Alias for compatibility
+export const authenticateJWT = verifyToken

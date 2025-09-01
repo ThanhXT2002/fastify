@@ -28,6 +28,7 @@ model User {
   avatarUrl String?
   role      Role     // dùng enum Role
   key       String   @unique // API key dùng để xác thực liên kết folder
+  active    Boolean  @default(true) // trạng thái kích hoạt tài khoản
   createdAt DateTime @default(now())
 
   @@map("users")
