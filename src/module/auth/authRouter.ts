@@ -54,6 +54,7 @@ export default async function authRouter(fastify: FastifyInstance) {
                   id: { type: 'string' },
                   email: { type: 'string' },
                   name: { type: 'string' },
+                  key: { type: 'string' },
                   role: { type: 'string' },
                   avatarUrl: { type: 'string' },
                   createdAt: { type: 'string' }
@@ -96,6 +97,7 @@ export default async function authRouter(fastify: FastifyInstance) {
                   email: { type: 'string' },
                   name: { type: 'string' },
                   role: { type: 'string' },
+                  key: { type: 'string' },
                   avatarUrl: { type: 'string' },
                   createdAt: { type: 'string' }
                 }

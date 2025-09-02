@@ -53,9 +53,7 @@ export class AuthService {
       if (!user) {
         return { error: 'User not found' }
       }
-      // Không trả về sensitive data như key
-      const { key, ...userProfile } = user
-      return { data: userProfile }
+      return { data: user }
     } catch (err: any) {
       return { error: err.message || 'Failed to get user profile' }
     }
@@ -67,9 +65,7 @@ export class AuthService {
       if (!user) {
         return { error: 'User not found' }
       }
-      // Không trả về sensitive data như key
-      const { key, ...userProfile } = user
-      return { data: userProfile }
+      return { data: user }
     } catch (err: any) {
       return { error: err.message || 'Failed to update user profile' }
     }
