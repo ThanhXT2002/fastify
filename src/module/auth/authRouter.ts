@@ -41,13 +41,7 @@ export default async function authRouter(fastify: FastifyInstance) {
     {
       preHandler: [verifyToken],
       schema: {
-        headers: {
-          type: 'object',
-          properties: {
-            authorization: { type: 'string' }
-          },
-          required: ['authorization']
-        },
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             type: 'object',
@@ -82,13 +76,7 @@ export default async function authRouter(fastify: FastifyInstance) {
     {
       preHandler: [verifyToken],
       schema: {
-        headers: {
-          type: 'object',
-          properties: {
-            authorization: { type: 'string' }
-          },
-          required: ['authorization']
-        },
+        security: [{ bearerAuth: [] }],
         body: {
           type: 'object',
           properties: {
@@ -129,13 +117,7 @@ export default async function authRouter(fastify: FastifyInstance) {
     {
       preHandler: [verifyToken],
       schema: {
-        headers: {
-          type: 'object',
-          properties: {
-            authorization: { type: 'string' }
-          },
-          required: ['authorization']
-        },
+        security: [{ bearerAuth: [] }],
         response: {
           200: {
             type: 'object',

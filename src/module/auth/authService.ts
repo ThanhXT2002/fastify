@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import cloudinary from '~/config/cloudinary'
 
-import { supabase } from '~/config/supabaseClient'
+import { supabase, supabaseAdmin } from '~/config/supabaseClient'
 import { AuthRepository } from './authRepository'
 
 export class AuthService {
@@ -14,7 +14,7 @@ export class AuthService {
   }
 
   async register(email: string, password: string, name?: string) {
-    // Đăng ký với Supabase
+    // Đăng ký với Supabase (cần verify email)
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) return { error: error.message }
     const user = data.user
@@ -83,6 +83,7 @@ export class AuthService {
       }
       return { data: { key: user.key } }
     } catch (err: any) {
+      console.log(err)
       return { error: err.message || 'Failed to get API key' }
     }
   }

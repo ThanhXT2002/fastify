@@ -49,6 +49,9 @@ export async function verifyToken(request: FastifyRequest, reply: FastifyReply) 
       email: user.email || '',
       ...user.user_metadata
     }
+
+    // Continue to next handler
+    return
   } catch (error) {
     return reply.code(401).send({
       status: false,
