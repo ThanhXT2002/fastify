@@ -22,21 +22,6 @@ export default async function fileRouter(fastify: FastifyInstance) {
         required: ['x-api-key']
       },
       consumes: ['multipart/form-data'],
-      body: {
-        type: 'object',
-        properties: {
-          folderName: { 
-            type: 'string',
-            description: 'Optional folder path for organizing files. Supports nested folders (e.g., "images/2024", "docs/projects/project1"). Leave empty for root folder.'
-          },
-          files: {
-            type: 'array',
-            items: { type: 'string', format: 'binary' },
-            description: 'Files to upload'
-          }
-        },
-        required: ['files']
-      },
       response: {
         200: {
           type: 'object',

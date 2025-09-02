@@ -10,7 +10,8 @@ const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
 // Enable CORS early so preflight requests are handled and responses include
 // Access-Control-Allow-* headers. Configure origin via env var `CORS_ORIGIN`.
 await fastify.register(cors, {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5175',
+  // WARNING: Allow all origins (only for local testing). Remove or change for production.
+  origin: true,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
   credentials: true

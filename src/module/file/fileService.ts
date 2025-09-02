@@ -10,7 +10,21 @@ export interface UploadFileData {
 }
 
 export interface UploadResult {
-  success: UploadFileData[]
+  // success should contain stored file metadata (id, url, names, size, etc.)
+  success: Array<{
+    id: string
+    userId: string
+    originalName: string
+    fileName: string
+    folderName: string
+    fileType: string
+    mimeType: string
+    size: number
+    url: string
+    publicId: string
+    cloudinaryFolder: string
+    uploadedAt?: Date | string
+  }>
   failed: { file: UploadFileData; error: string }[]
 }
 
@@ -221,8 +235,23 @@ export class FileService {
           cloudinaryFolder
         }
 
-        await this.fileRepo.create(fileData)
-        result.success.push(file)
+        const saved = await this.fileRepo.create(fileData)
+
+        // Push saved metadata (not the raw buffer) to response
+        result.success.push({
+          id: saved.id,
+          userId: saved.userId,
+          originalName: saved.originalName,
+          fileName: saved.fileName,
+          folderName: saved.folderName,
+          fileType: saved.fileType,
+          mimeType: saved.mimeType,
+          size: saved.size,
+          url: saved.url,
+          publicId: saved.publicId,
+          cloudinaryFolder: saved.cloudinaryFolder,
+          uploadedAt: saved.uploadedAt
+        })
 
       } catch (error: any) {
         result.failed.push({

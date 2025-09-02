@@ -53,11 +53,28 @@ export class FileController {
         folderName
       )
 
+      // Create compact response to avoid Postman size limits
+      const compactResult = {
+        success: result.success.map(file => ({
+          id: file.id,
+          originalName: file.originalName,
+          url: file.url,
+          size: file.size,
+          fileType: file.fileType,
+          folderName: file.folderName
+        })),
+        failed: result.failed.map(fail => ({
+          fileName: fail.file.originalName,
+          error: fail.error
+        }))
+      }
+
       return reply
         .status(StatusCodes.OK)
-        .send(ApiResponse.ok(result, 'Files processed successfully', StatusCodes.OK))
+        .send(ApiResponse.ok(compactResult, 'Files processed successfully', StatusCodes.OK))
 
     } catch (error: any) {
+      console.log(error)
       return reply
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .send(ApiResponse.error(error.message, 'Upload failed', StatusCodes.INTERNAL_SERVER_ERROR))
