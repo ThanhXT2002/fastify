@@ -74,4 +74,16 @@ export class AuthService {
       return { error: err.message || 'Failed to update user profile' }
     }
   }
+
+  async getUserApiKey(userId: string) {
+    try {
+      const user = await this.authRepo.findById(userId)
+      if (!user) {
+        return { error: 'User not found' }
+      }
+      return { data: { key: user.key } }
+    } catch (err: any) {
+      return { error: err.message || 'Failed to get API key' }
+    }
+  }
 }

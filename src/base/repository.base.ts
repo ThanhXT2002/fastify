@@ -8,8 +8,11 @@ type ModelDelegate = {
   create: (args: any) => Promise<any>
   update: (args: any) => Promise<any>
   delete: (args: any) => Promise<any>
+  deleteMany: (args: any) => Promise<any>
   upsert: (args: any) => Promise<any>
   count: (args?: any) => Promise<any>
+  aggregate: (args: any) => Promise<any>
+  groupBy: (args: any) => Promise<any>
 }
 
 type PrismaModelKeys = {

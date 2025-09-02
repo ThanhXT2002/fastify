@@ -123,4 +123,40 @@ export default async function authRouter(fastify: FastifyInstance) {
     },
     authController.updateProfile.bind(authController)
   )
+
+  fastify.get(
+    '/api-key',
+    {
+      preHandler: [verifyToken],
+      schema: {
+        headers: {
+          type: 'object',
+          properties: {
+            authorization: { type: 'string' }
+          },
+          required: ['authorization']
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              status: { type: 'boolean' },
+              code: { type: 'integer' },
+              data: {
+                type: 'object',
+                properties: {
+                  key: { type: 'string' }
+                }
+              },
+              message: { type: 'string' },
+              timestamp: { type: 'string', format: 'date-time' }
+            }
+          }
+        },
+        tags: ['Auth'],
+        summary: 'Get user API key'
+      }
+    },
+    authController.getApiKey.bind(authController)
+  )
 }

@@ -30,6 +30,32 @@ model User {
   key       String   @unique // API key dùng để xác thực liên kết folder
   active    Boolean  @default(true) // trạng thái kích hoạt tài khoản
   createdAt DateTime @default(now())
+  
+  // Relations
+  files     File[]
 
   @@map("users")
+}
+
+model File {
+  id               String   @id @default(uuid())
+  userId           String   // liên kết với User
+  originalName     String   // tên file gốc
+  fileName         String   // tên file trên Cloudinary
+  folderName       String   // tên thư mục (image, document, video...)
+  fileType         String   // image/jpeg, application/pdf...
+  mimeType         String   // MIME type
+  size             Int      // kích thước file (bytes)
+  url              String   // URL đầy đủ từ Cloudinary
+  publicId         String   // Cloudinary public_id để quản lý
+  cloudinaryFolder String   // đường dẫn folder đầy đủ trên Cloudinary
+  uploadedAt       DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  
+  // Relations
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([userId, folderName])
+  @@map("files")
 }

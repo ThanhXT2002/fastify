@@ -2,6 +2,7 @@ import Fastify from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
 import { registerSwagger } from './config/swagger.js'
 import cors from '@fastify/cors'
+import multipart from '@fastify/multipart'
 import 'dotenv/config'
 
 const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
@@ -11,8 +12,15 @@ const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
 await fastify.register(cors, {
   origin: process.env.CORS_ORIGIN || 'http://localhost:5175',
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
   credentials: true
+})
+
+// Register multipart for file uploads
+await fastify.register(multipart, {
+  limits: {
+    fileSize: 100 * 1024 * 1024 // 100MB max file size
+  }
 })
 
 await registerSwagger(fastify)

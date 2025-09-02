@@ -77,4 +77,25 @@ export class AuthController {
         .send(ApiResponse.error(error.message, 'Failed to update profile'))
     }
   }
+
+  async getApiKey(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const userId = request.user?.id
+
+      if (!userId) {
+        return reply.code(StatusCodes.UNAUTHORIZED).send(ApiResponse.error('User not found in request', 'Unauthorized'))
+      }
+
+      const result = await this.authService.getUserApiKey(userId)
+      if (result.error) {
+        return reply.code(StatusCodes.NOT_FOUND).send(ApiResponse.error(result.error, 'User not found'))
+      }
+
+      return reply.code(StatusCodes.OK).send(ApiResponse.ok(result.data, 'API key retrieved successfully'))
+    } catch (error: any) {
+      return reply
+        .code(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ApiResponse.error(error.message, 'Failed to get API key'))
+    }
+  }
 }
