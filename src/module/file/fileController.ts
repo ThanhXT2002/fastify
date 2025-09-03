@@ -74,7 +74,6 @@ export class FileController {
         .send(ApiResponse.ok(compactResult, 'Files processed successfully', StatusCodes.OK))
 
     } catch (error: any) {
-      console.log(error)
       return reply
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
         .send(ApiResponse.error(error.message, 'Upload failed', StatusCodes.INTERNAL_SERVER_ERROR))

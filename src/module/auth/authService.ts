@@ -79,7 +79,6 @@ export class AuthService {
       }
       return { data: { key: user.key } }
     } catch (err: any) {
-      console.log(err)
       return { error: err.message || 'Failed to get API key' }
     }
   }
