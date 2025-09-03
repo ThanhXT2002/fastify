@@ -261,4 +261,41 @@ export class FileController {
         .send(ApiResponse.error(error.message, 'Failed to get storage stats', StatusCodes.INTERNAL_SERVER_ERROR))
     }
   }
+
+  // Browse folder contents (files và subfolders cùng cấp)
+  browseFolderContents = async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const user = request.apiUser
+      if (!user) {
+        return reply
+          .status(StatusCodes.UNAUTHORIZED)
+          .send(ApiResponse.error('User not authenticated', 'Unauthorized', StatusCodes.UNAUTHORIZED))
+      }
+
+      const query = request.query as {
+        path?: string
+        page?: string
+        limit?: string
+      }
+
+      const page = parseInt(query.page || '1')
+      const limit = Math.min(parseInt(query.limit || '20'), 100) // Max 100 items per page
+
+      const result = await this.fileService.browseFolderContents(
+        user.id,
+        query.path,
+        page,
+        limit
+      )
+
+      return reply
+        .status(StatusCodes.OK)
+        .send(ApiResponse.ok(result, 'Folder contents retrieved successfully', StatusCodes.OK))
+
+    } catch (error: any) {
+      return reply
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ApiResponse.error(error.message, 'Failed to browse folder contents', StatusCodes.INTERNAL_SERVER_ERROR))
+    }
+  }
 }

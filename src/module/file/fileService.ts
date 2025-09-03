@@ -40,13 +40,13 @@ const DEFAULT_FILE_CATEGORIES = {
 // General size limits (can be customized per folder if needed)
 const DEFAULT_SIZE_LIMITS = {
   // Per file type
-  image: 10 * 1024 * 1024, // 10MB
-  document: 25 * 1024 * 1024, // 25MB
-  video: 100 * 1024 * 1024, // 100MB
-  audio: 20 * 1024 * 1024, // 20MB
-  archive: 50 * 1024 * 1024, // 50MB
+  image: 50 * 1024 * 1024, // 50MB
+  document: 250 * 1024 * 1024, // 250MB
+  video: 200 * 1024 * 1024, // 200MB
+  audio: 200 * 1024 * 1024, // 200MB
+  archive: 500 * 1024 * 1024, // 500MB
   // General limit for unknown types
-  default: 50 * 1024 * 1024 // 50MB
+  default: 500 * 1024 * 1024 // 500MB
 }
 
 export class FileService {
@@ -324,5 +324,20 @@ export class FileService {
   // Get storage statistics
   async getStorageStats(userId: string) {
     return this.fileRepo.getStorageStats(userId)
+  }
+
+  // Browse folder contents (files và subfolders cùng cấp)
+  async browseFolderContents(userId: string, folderPath?: string, page = 1, limit = 20) {
+    // Validate và clean folder path
+    const cleanPath = folderPath?.trim().replace(/^\/+|\/+$/g, '') || ''
+    
+    if (cleanPath) {
+      const validationError = this.validateFolderName(cleanPath)
+      if (validationError) {
+        throw new Error(validationError)
+      }
+    }
+
+    return this.fileRepo.browseFolderContents(userId, cleanPath, page, limit)
   }
 }

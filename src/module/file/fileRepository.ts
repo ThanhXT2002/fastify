@@ -109,4 +109,69 @@ export class FileRepository extends BaseRepository<'file'> {
       }))
     }
   }
+
+  // Browse folder contents (files và subfolders cùng cấp)
+  async browseFolderContents(userId: string, currentPath: string = '', page = 1, limit = 20) {
+    const skip = (page - 1) * limit
+
+    // Lấy files ở current path
+    const filesWhere: any = { 
+      userId,
+      folderName: currentPath 
+    }
+
+    const [files, totalFiles] = await Promise.all([
+      this.findMany({
+        where: filesWhere,
+        orderBy: { uploadedAt: 'desc' },
+        skip,
+        take: limit
+      }),
+      this.count(filesWhere)
+    ])
+
+    // Lấy subfolders (folders con trực tiếp)
+    const allFolders = await this.model.findMany({
+      where: { userId },
+      select: { folderName: true },
+      distinct: ['folderName']
+    })
+
+    // Filter để chỉ lấy subfolders trực tiếp
+    const subfolders = allFolders
+      .map((f: any) => f.folderName)
+      .filter((folderName: string) => {
+        if (!folderName) return false // Skip root files
+        
+        if (currentPath === '') {
+          // Root level - lấy folders không có dấu "/"
+          return !folderName.includes('/')
+        } else {
+          // Specific path - lấy folders bắt đầu với currentPath + "/"
+          const expectedPrefix = currentPath + '/'
+          return folderName.startsWith(expectedPrefix) && 
+                 !folderName.substring(expectedPrefix.length).includes('/')
+        }
+      })
+      .map((folderName: string) => {
+        // Extract folder name (last part)
+        if (currentPath === '') {
+          return folderName
+        } else {
+          return folderName.substring(currentPath.length + 1)
+        }
+      })
+
+    return {
+      currentPath,
+      files,
+      subfolders: [...new Set(subfolders)].sort(), // Remove duplicates and sort
+      pagination: {
+        page,
+        limit,
+        total: totalFiles,
+        totalPages: Math.ceil(totalFiles / limit)
+      }
+    }
+  }
 }

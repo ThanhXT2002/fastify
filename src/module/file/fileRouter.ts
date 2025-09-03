@@ -171,6 +171,76 @@ export default async function fileRouter(fastify: FastifyInstance) {
     handler: fileController.getStorageStats
   })
 
+  // Browse folder contents (files và subfolders cùng cấp)
+  fastify.get('/files/browse', {
+    schema: {
+      tags: ['File'],
+      summary: 'Browse folder contents',
+      description: `Browse files and subfolders in a specific path. 
+      
+**Examples:**
+- \`/files/browse\` - Get root files and root-level folders
+- \`/files/browse?path=documents\` - Get files in "documents" folder and its subfolders
+- \`/files/browse?path=documents/2024\` - Get files in "documents/2024" folder and its subfolders
+      
+Returns both files and immediate subfolders at the specified path level.`,
+      headers: {
+        type: 'object',
+        properties: {
+          'x-api-key': { type: 'string' }
+        },
+        required: ['x-api-key']
+      },
+      querystring: {
+        type: 'object',
+        properties: {
+          path: { 
+            type: 'string',
+            description: 'Folder path to browse (empty for root level, supports nested like "docs/2024")'
+          },
+          page: { type: 'integer', minimum: 1, default: 1 },
+          limit: { type: 'integer', minimum: 1, maximum: 1000, default: 20 }
+        }
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            status: { type: 'boolean' },
+            code: { type: 'integer' },
+            data: {
+              type: 'object',
+              properties: {
+                currentPath: { type: 'string', description: 'Current folder path being browsed' },
+                files: { 
+                  type: 'array',
+                  description: 'Files in the current folder'
+                },
+                subfolders: { 
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Immediate subfolders in the current folder'
+                },
+                pagination: {
+                  type: 'object',
+                  properties: {
+                    page: { type: 'integer' },
+                    limit: { type: 'integer' },
+                    total: { type: 'integer' },
+                    totalPages: { type: 'integer' }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' },
+            timestamp: { type: 'string', format: 'date-time' }
+          }
+        }
+      }
+    },
+    handler: fileController.browseFolderContents
+  })
+
   // Get file by ID
   fastify.get('/files/:id', {
     schema: {

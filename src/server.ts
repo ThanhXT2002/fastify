@@ -20,7 +20,7 @@ await fastify.register(cors, {
 // Register multipart for file uploads
 await fastify.register(multipart, {
   limits: {
-    fileSize: 100 * 1024 * 1024 // 100MB max file size
+    fileSize: 500 * 1024 * 1024 // 500MB max file size
   }
 })
 
