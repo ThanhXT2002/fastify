@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { FileService, type UploadFileData } from './fileService.js'
-import { ApiResponse } from '~/base/api-reponse.js'
+import { FileService, type UploadFileData } from './fileService'
+import { ApiResponse } from '~/base/api-reponse'
 import { StatusCodes } from 'http-status-codes'
 
 export class FileController {

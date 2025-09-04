@@ -1,4 +1,4 @@
-import { UserRepository } from './userRepository.js'
+import { UserRepository } from './userRepository'
 
 type Role = 'ADMIN' | 'EDITOR' | 'USER'
 

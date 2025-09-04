@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { UserService } from './userService.js'
-import { ApiResponse } from '~/base/api-reponse.js'
+import { UserService } from './userService'
+import { ApiResponse } from '~/base/api-reponse'
 import { StatusCodes } from 'http-status-codes'
 
 export class UserController {

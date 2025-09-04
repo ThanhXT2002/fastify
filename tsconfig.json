@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext", // Chuẩn ESModule cho output
+  "module": "CommonJS", // Emit CommonJS modules to match package.json
     "moduleResolution": "node", // Cho phép import không cần đuôi file khi code
     "target": "ES2023", // Target output cho code
     "outDir": "dist", // Đường dẫn output cho thư mục build
@@ -9,8 +9,7 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": ".", // Đường dẫn base cho các import
     "paths": {
-      "~/*": ["src/*"], // Đường dẫn tương đối cho các import (alias)
-      "@prisma/client": ["./generated/prisma"]
+      "~/*": ["src/*"] // Đường dẫn tương đối cho các import (alias)
     }
   },
   "files": ["src/type.d.ts"], // Các file dùng để defined global type cho dự án

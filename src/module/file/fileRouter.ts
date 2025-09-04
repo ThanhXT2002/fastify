@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify'
-import { FileController } from './fileController.js'
-import { authenticateApiKey } from '~/middleware/apiAuth.js'
+import { FileController } from './fileController'
+import { authenticateApiKey } from '~/middleware/apiAuth'
 
 export default async function fileRouter(fastify: FastifyInstance) {
   const fileController = new FileController()

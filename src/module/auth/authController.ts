@@ -1,5 +1,5 @@
-import { AuthService } from './authService.js'
-import { ApiResponse } from '../../base/api-reponse.js'
+import { AuthService } from './authService'
+import { ApiResponse } from '../../base/api-reponse'
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { registerSchema } from '~/schema/authSchema'
 import { StatusCodes } from 'http-status-codes'

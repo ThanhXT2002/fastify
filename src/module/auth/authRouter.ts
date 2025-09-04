@@ -1,4 +1,4 @@
-import { AuthController } from './authController.js'
+import { AuthController } from './authController'
 import { FastifyInstance } from 'fastify'
 import { verifyToken } from '~/middleware/auth'
 

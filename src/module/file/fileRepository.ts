@@ -1,4 +1,4 @@
-import { BaseRepository } from '~/base/repository.base.js'
+import { BaseRepository } from '~/base/repository-base'
 
 export interface FileData {
   userId: string

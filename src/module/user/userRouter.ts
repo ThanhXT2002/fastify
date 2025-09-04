@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
-import { UserController } from './userController.js'
-import { authenticateJWT } from '~/middleware/auth.js'
-import { requireRole } from '~/middleware/permissions.js'
+import { UserController } from './userController'
+import { authenticateJWT } from '~/middleware/auth'
+import { requireRole } from '~/middleware/permissions'
 
 export default async function userRouter(fastify: FastifyInstance) {
   const userController = new UserController()

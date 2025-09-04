@@ -1,4 +1,4 @@
-import { BaseRepository } from '~/base/repository.base.js'
+import { BaseRepository } from '~/base/repository-base'
 
 export class UserRepository extends BaseRepository<'user'> {
   constructor() {

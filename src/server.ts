@@ -1,37 +1,40 @@
 import Fastify from 'fastify'
 import { ZodTypeProvider } from 'fastify-type-provider-zod'
-import { registerSwagger } from './config/swagger.js'
+import { registerSwagger } from './config/swagger'
 import cors from '@fastify/cors'
 import multipart from '@fastify/multipart'
 import 'dotenv/config'
+import { indexRoutes } from './router/index'
 
 const fastify = Fastify().withTypeProvider<ZodTypeProvider>()
 
-// Enable CORS early so preflight requests are handled and responses include
-// Access-Control-Allow-* headers. Configure origin via env var `CORS_ORIGIN`.
-await fastify.register(cors, {
+async function main() {
+  // Enable CORS early so preflight requests are handled and responses include
+  // Access-Control-Allow-* headers. Configure origin via env var `CORS_ORIGIN`.
+  await fastify.register(cors, {
   // WARNING: Allow all origins (only for local testing). Remove or change for production.
   origin: true,
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
   credentials: true
 })
+  // Register multipart for file uploads
+  await fastify.register(multipart, {
+    limits: {
+      fileSize: 500 * 1024 * 1024 // 500MB max file size
+    }
+  })
 
-// Register multipart for file uploads
-await fastify.register(multipart, {
-  limits: {
-    fileSize: 500 * 1024 * 1024 // 500MB max file size
-  }
-})
+  await registerSwagger(fastify)
 
-await registerSwagger(fastify)
+  // register all application routes (router/index.ts handles prefixing)
+  await indexRoutes(fastify)
 
-import { indexRoutes } from './router/index.js'
+  await fastify.listen({ port: 3175 })
+  console.log(`Server listening`)
+}
 
-// register all application routes (router/index.ts handles prefixing)
-await indexRoutes(fastify)
-
-fastify.listen({ port: 3000 }, (err, address) => {
-  if (err) throw err
-  console.log(`Server listening at ${address}`)
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
 })

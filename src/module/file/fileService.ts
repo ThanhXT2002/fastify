@@ -1,5 +1,5 @@
-import { FileRepository, type FileData } from './fileRepository.js'
-import cloudinary from '~/config/cloudinary.js'
+import { FileRepository, type FileData } from './fileRepository'
+import cloudinary from '~/config/cloudinary'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface UploadFileData {
