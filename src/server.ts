@@ -31,7 +31,7 @@ async function main() {
   await indexRoutes(fastify)
 
   await fastify.listen({ port: 3175 })
-  console.log(`Server listening`)
+  console.log(`Server listening on port 3175`)
 }
 
 main().catch((err) => {
