@@ -372,4 +372,139 @@ Returns both files and immediate subfolders at the specified path level.`,
     },
     handler: fileController.deleteFile
   })
+
+  // Delete multiple files
+  fastify.delete('/files/bulk', {
+    schema: {
+      tags: ['File'],
+      summary: 'Delete multiple files',
+      description: 'Delete multiple files from both Cloudinary and database by providing array of file IDs',
+      headers: {
+        type: 'object',
+        properties: {
+          'x-api-key': { type: 'string' }
+        },
+        required: ['x-api-key']
+      },
+      body: {
+        type: 'object',
+        properties: {
+          fileIds: {
+            type: 'array',
+            items: { type: 'string' },
+            minItems: 1,
+            description: 'Array of file IDs to delete'
+          }
+        },
+        required: ['fileIds']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            status: { type: 'boolean' },
+            code: { type: 'integer' },
+            data: {
+              type: 'object',
+              properties: {
+                message: { type: 'string' },
+                result: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'Array of successfully deleted file IDs'
+                    },
+                    failed: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          fileId: { type: 'string' },
+                          error: { type: 'string' }
+                        }
+                      },
+                      description: 'Array of failed deletions with error messages'
+                    }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' },
+            timestamp: { type: 'string', format: 'date-time' }
+          }
+        }
+      }
+    },
+    handler: fileController.deleteMultipleFiles
+  })
+
+  // Delete files by URLs
+  fastify.delete('/files/bulk-by-urls', {
+    schema: {
+      tags: ['File'],
+      summary: 'Delete multiple files by URLs',
+      description: 'Delete multiple files from both Cloudinary and database by providing array of file URLs',
+      headers: {
+        type: 'object',
+        properties: {
+          'x-api-key': { type: 'string' }
+        },
+        required: ['x-api-key']
+      },
+      body: {
+        type: 'object',
+        properties: {
+          urls: {
+            type: 'array',
+            items: { type: 'string', format: 'uri' },
+            minItems: 1,
+            maxItems: 100,
+            description: 'Array of file URLs to delete (max 100)'
+          }
+        },
+        required: ['urls']
+      },
+      response: {
+        200: {
+          type: 'object',
+          properties: {
+            status: { type: 'boolean' },
+            code: { type: 'integer' },
+            data: {
+              type: 'object',
+              properties: {
+                message: { type: 'string' },
+                result: {
+                  type: 'object',
+                  properties: {
+                    success: {
+                      type: 'array',
+                      items: { type: 'string' },
+                      description: 'Array of successfully deleted file URLs'
+                    },
+                    failed: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          url: { type: 'string' },
+                          error: { type: 'string' }
+                        }
+                      },
+                      description: 'Array of failed deletions with error messages'
+                    }
+                  }
+                }
+              }
+            },
+            message: { type: 'string' },
+            timestamp: { type: 'string', format: 'date-time' }
+          }
+        }
+      }
+    },
+    handler: fileController.deleteFilesByUrls
+  })
 }

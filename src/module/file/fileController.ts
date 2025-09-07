@@ -200,6 +200,106 @@ export class FileController {
     }
   }
 
+  // Delete multiple files
+  deleteMultipleFiles = async (
+    request: FastifyRequest<{
+      Body: { fileIds: string[] }
+    }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const user = request.apiUser
+      if (!user) {
+        return reply
+          .status(StatusCodes.UNAUTHORIZED)
+          .send(ApiResponse.error('User not authenticated', 'Unauthorized', StatusCodes.UNAUTHORIZED))
+      }
+
+      const { fileIds } = request.body
+
+      if (!fileIds || !Array.isArray(fileIds) || fileIds.length === 0) {
+        return reply
+          .status(StatusCodes.BAD_REQUEST)
+          .send(ApiResponse.error('No file IDs provided or invalid format', 'Bad Request', StatusCodes.BAD_REQUEST))
+      }
+
+      const result = await this.fileService.deleteMultipleFiles(fileIds, user.id)
+
+      // Determine status code based on results
+      let statusCode = StatusCodes.OK
+      let message = 'Files deletion completed'
+
+      if (result.result.success.length === 0 && result.result.failed.length > 0) {
+        // All failed
+        statusCode = StatusCodes.BAD_REQUEST
+        message = 'All files failed to delete'
+      } else if (result.result.failed.length > 0) {
+        // Partial success
+        statusCode = StatusCodes.PARTIAL_CONTENT
+        message = 'Some files failed to delete'
+      }
+
+      return reply
+        .status(statusCode)
+        .send(ApiResponse.ok(result, message, statusCode))
+
+    } catch (error: any) {
+      return reply
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ApiResponse.error(error.message, 'Failed to delete files', StatusCodes.INTERNAL_SERVER_ERROR))
+    }
+  }
+
+  // Delete files by URLs
+  deleteFilesByUrls = async (
+    request: FastifyRequest<{
+      Body: { urls: string[] }
+    }>,
+    reply: FastifyReply
+  ) => {
+    try {
+      const user = request.apiUser
+      if (!user) {
+        return reply
+          .status(StatusCodes.UNAUTHORIZED)
+          .send(ApiResponse.error('User not authenticated', 'Unauthorized', StatusCodes.UNAUTHORIZED))
+      }
+
+      const { urls } = request.body
+
+      if (!urls || !Array.isArray(urls) || urls.length === 0) {
+        return reply
+          .status(StatusCodes.BAD_REQUEST)
+          .send(ApiResponse.error('No URLs provided or invalid format', 'Bad Request', StatusCodes.BAD_REQUEST))
+      }
+
+      const result = await this.fileService.deleteFilesByUrls(urls, user.id)
+
+      // Determine status code based on results
+      let statusCode = StatusCodes.OK
+      let message = 'Files deletion by URLs completed'
+
+      if (result.result.success.length === 0 && result.result.failed.length > 0) {
+        // All failed
+        statusCode = StatusCodes.BAD_REQUEST
+        message = 'All files failed to delete'
+      } else if (result.result.failed.length > 0) {
+        // Partial success
+        statusCode = StatusCodes.PARTIAL_CONTENT
+        message = 'Some files failed to delete'
+      }
+
+      return reply
+        .status(statusCode)
+        .send(ApiResponse.ok(result, message, statusCode))
+
+    } catch (error: any) {
+      return reply
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(ApiResponse.error(error.message, 'Failed to delete files by URLs', StatusCodes.INTERNAL_SERVER_ERROR))
+    }
+  }
+
   // Update file
   updateFile = async (
     request: FastifyRequest<{

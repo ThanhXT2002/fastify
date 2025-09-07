@@ -309,6 +309,122 @@ export class FileService {
     return { message: 'File deleted successfully' }
   }
 
+  // Delete multiple files
+  async deleteMultipleFiles(fileIds: string[], userId: string) {
+    const result = {
+      success: [] as string[],
+      failed: [] as { fileId: string; error: string }[]
+    }
+
+    // Validate input
+    if (!fileIds || fileIds.length === 0) {
+      throw new Error('No file IDs provided')
+    }
+
+    // Process each file
+    for (const fileId of fileIds) {
+      try {
+        // Check if file exists and belongs to user
+        const file = await this.fileRepo.findUnique({
+          where: { id: fileId, userId }
+        })
+
+        if (!file) {
+          result.failed.push({
+            fileId,
+            error: 'File not found or access denied'
+          })
+          continue
+        }
+
+        // Delete from Cloudinary (parallel processing for better performance)
+        try {
+          await cloudinary.uploader.destroy(file.publicId)
+        } catch (error: any) {
+          // Continue even if Cloudinary delete fails
+          console.error(`Failed to delete file ${fileId} from Cloudinary:`, error)
+        }
+
+        // Delete from database
+        await this.fileRepo.delete({ id: fileId })
+        
+        result.success.push(fileId)
+
+      } catch (error: any) {
+        result.failed.push({
+          fileId,
+          error: error.message || 'Failed to delete file'
+        })
+      }
+    }
+
+    return {
+      message: `Deleted ${result.success.length} files successfully${result.failed.length > 0 ? `, ${result.failed.length} failed` : ''}`,
+      result
+    }
+  }
+
+  // Delete files by URLs
+  async deleteFilesByUrls(urls: string[], userId: string) {
+    const result = {
+      success: [] as string[],
+      failed: [] as { url: string; error: string }[]
+    }
+
+    // Validate input
+    if (!urls || urls.length === 0) {
+      throw new Error('No URLs provided')
+    }
+
+    // Process each URL
+    for (const url of urls) {
+      try {
+        // Find file by URL and user using findMany then get first result
+        const files = await this.fileRepo.findMany({
+          where: { 
+            url: url,
+            userId: userId 
+          },
+          take: 1
+        })
+
+        const file = files[0]
+
+        if (!file) {
+          result.failed.push({
+            url,
+            error: 'File not found or access denied'
+          })
+          continue
+        }
+
+        // Delete from Cloudinary
+        try {
+          await cloudinary.uploader.destroy(file.publicId)
+        } catch (error: any) {
+          // Continue even if Cloudinary delete fails
+          console.error(`Failed to delete file with URL ${url} from Cloudinary:`, error)
+        }
+
+        // Delete from database
+        await this.fileRepo.delete({ id: file.id })
+        
+        result.success.push(url)
+
+      } catch (error: any) {
+        result.failed.push({
+          url,
+          error: error.message || 'Failed to delete file'
+        })
+      }
+    }
+
+    return {
+      message: `Deleted ${result.success.length} files successfully${result.failed.length > 0 ? `, ${result.failed.length} failed` : ''}`,
+      result
+    }
+  }
+
   // Update file (rename)
   async updateFile(fileId: string, userId: string, updateData: { originalName?: string }) {
     const file = await this.getFileById(fileId, userId)
