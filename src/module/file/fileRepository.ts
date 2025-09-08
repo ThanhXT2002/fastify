@@ -57,7 +57,7 @@ export class FileRepository extends BaseRepository<'file'> {
     }
   }
 
-  // Lấy tất cả folders của user
+  // Lấy tất cả folders của user (bao gồm cả parent folders)
   async getUserFolders(userId: string) {
     const folders = await this.model.findMany({
       where: { userId },
@@ -66,7 +66,28 @@ export class FileRepository extends BaseRepository<'file'> {
       orderBy: { folderName: 'asc' }
     })
 
-    return folders.map((f: any) => f.folderName)
+    // Extract all unique folder names
+    const allFolderNames = folders
+      .map((f: any) => f.folderName)
+      .filter((folderName: string) => folderName) // Remove empty folder names
+
+    // Generate set of all possible folders including parent folders
+    const allPossibleFolders = new Set<string>()
+    
+    // Add all existing folder names and their parent paths
+    allFolderNames.forEach((folderName: string) => {
+      allPossibleFolders.add(folderName)
+      
+      // Add all parent paths for nested folders
+      // Ví dụ: project-insurance/avatarUrl -> thêm project-insurance
+      const parts = folderName.split('/')
+      for (let i = 1; i < parts.length; i++) {
+        const parentPath = parts.slice(0, i).join('/')
+        allPossibleFolders.add(parentPath)
+      }
+    })
+
+    return Array.from(allPossibleFolders).sort()
   }
 
   // Kiểm tra file có thuộc về user không
@@ -130,24 +151,42 @@ export class FileRepository extends BaseRepository<'file'> {
       this.count(filesWhere)
     ])
 
-    // Lấy subfolders (folders con trực tiếp)
+    // Lấy tất cả folders của user để extract subfolders
     const allFolders = await this.model.findMany({
       where: { userId },
       select: { folderName: true },
       distinct: ['folderName']
     })
 
-    // Filter để chỉ lấy subfolders trực tiếp
-    const subfolders = allFolders
+    // Extract all unique folder names
+    const allFolderNames = allFolders
       .map((f: any) => f.folderName)
+      .filter((folderName: string) => folderName) // Remove empty folder names
+
+    // Generate set of all possible parent folders and immediate subfolders
+    const allPossibleFolders = new Set<string>()
+    
+    // Add all existing folder names
+    allFolderNames.forEach((folderName: string) => {
+      allPossibleFolders.add(folderName)
+      
+      // Add all parent paths for nested folders
+      // Ví dụ: project-insurance/avatarUrl -> thêm project-insurance
+      const parts = folderName.split('/')
+      for (let i = 1; i < parts.length; i++) {
+        const parentPath = parts.slice(0, i).join('/')
+        allPossibleFolders.add(parentPath)
+      }
+    })
+
+    // Filter để chỉ lấy subfolders trực tiếp tại currentPath
+    const subfolders = Array.from(allPossibleFolders)
       .filter((folderName: string) => {
-        if (!folderName) return false // Skip root files
-        
         if (currentPath === '') {
-          // Root level - lấy folders không có dấu "/"
+          // Root level - lấy folders không có dấu "/" (top-level folders)
           return !folderName.includes('/')
         } else {
-          // Specific path - lấy folders bắt đầu với currentPath + "/"
+          // Specific path - lấy folders bắt đầu với currentPath + "/" và không có thêm "/" sau đó
           const expectedPrefix = currentPath + '/'
           return folderName.startsWith(expectedPrefix) && 
                  !folderName.substring(expectedPrefix.length).includes('/')
