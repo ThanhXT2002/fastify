@@ -141,19 +141,23 @@ export class FileService {
     }
   }
 
-  // Upload single file to Cloudinary
-  private async uploadToCloudinary(file: UploadFileData, cloudinaryFolder: string): Promise<any> {
+  // Upload single file to Cloudinary.
+  // If `forceImage` is true (used for SVG), upload with resource_type='image' so Cloudinary
+  // stores it as an image resource and returns an image delivery URL (not raw which forces download).
+  private async uploadToCloudinary(file: UploadFileData, cloudinaryFolder: string, forceImage = false): Promise<any> {
     return new Promise((resolve, reject) => {
       const uniqueFileName = `${Date.now()}_${uuidv4()}`
-      
+
+      const options: any = {
+        folder: cloudinaryFolder,
+        public_id: uniqueFileName,
+        resource_type: forceImage ? 'image' : 'auto',
+        use_filename: false,
+        unique_filename: true
+      }
+
       cloudinary.uploader.upload_stream(
-        {
-          folder: cloudinaryFolder,
-          public_id: uniqueFileName,
-          resource_type: 'auto', // Auto-detect file type
-          use_filename: false,
-          unique_filename: true
-        },
+        options,
         (error, result) => {
           if (error) {
             reject(error)
@@ -218,8 +222,9 @@ export class FileService {
           continue
         }
 
-        // Upload to Cloudinary
-        const cloudinaryResult = await this.uploadToCloudinary(file, cloudinaryFolder)
+  // Upload to Cloudinary - force image storage for SVG so browser can render it instead of downloading
+  const isSvg = file.mimeType === 'image/svg+xml' || file.originalName.toLowerCase().endsWith('.svg')
+  const cloudinaryResult = await this.uploadToCloudinary(file, cloudinaryFolder, isSvg)
 
         // Save to database
         const fileData: FileData = {
